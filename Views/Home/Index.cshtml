@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/min/dropzone.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/min/dropzone.min.js"></script>
+
+<form action="/api/fileupload" class="dropzone" id="my-awesome-dropzone"></form>
+
+<script>
+
+    // Initialize Dropzone for an element, e.g., with the class .dropzone
+    var myDropzone = new Dropzone(".dropzone", {
+        url: '/fileupload/uploadchunk', // Your API endpoint
+        timeout: 180000,
+        clickable: true,
+        maxFilesize: 20480,
+        chunking: true,
+        forceChunking: true,
+        parallelChunkUploads: false,
+        chunkSize: 1000 * 1024 * 1024, // 1000 MB chunk size
+        retryChunks: true,
+        retryChunksLimit: 3,
+        params: function (files, xhr, chunk) {
+            if (chunk) {
+                return {
+                    dzUuid: chunk.file.upload.uuid,
+                    dzChunkIndex: chunk.index,
+                    dzTotalFileSize: chunk.file.size,
+                    dzCurrentChunkSize: chunk.dataBlock.data.size,
+                    dzTotalChunkCount: chunk.file.upload.totalChunkCount,
+                    dzChunkByteOffset: chunk.index * this.options.chunkSize,
+                    dzChunkSize: this.options.chunkSize,
+                    dzFilename: chunk.file.name,
+                    clientCode: 'test',
+                    merchantCode: 'test2',
+                    fileDescription: 'desc',
+                    categoryID: 1
+                };
+            }
+        }
+    });
+
+</script>
